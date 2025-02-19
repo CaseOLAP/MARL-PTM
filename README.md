@@ -35,19 +35,19 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
 
 ## Project Structure
 
-marl-ptm-prediction/
-│── data/                     # Data directory (protein sequences, pathways, gene expression)
-│── models/                   # Trained models
-│── utils/                    # Utility functions
-│── main.py                   # Entry point for training and evaluation
-│── data_processing.py         # Data preprocessing and feature extraction
-│── marl_agents.py             # Defines multi-agent RL architecture
-│── train_marl.py              # Training pipeline
-│── evaluate_marl.py           # Evaluation and benchmarking
-│── reward_function.py         # Reward mechanism for reinforcement learning
-│── config.py                  # Configuration file (hyperparameters)
-│── requirements.txt           # Dependencies
-│── README.md                  # Project documentation
+  marl-ptm-prediction/
+  │── data/                     # Data directory (protein sequences, pathways, gene expression)
+  │── models/                   # Trained models
+  │── utils/                    # Utility functions
+  │── main.py                   # Entry point for training and evaluation
+  │── data_processing.py         # Data preprocessing and feature extraction
+  │── marl_agents.py             # Defines multi-agent RL architecture
+  │── train_marl.py              # Training pipeline
+  │── evaluate_marl.py           # Evaluation and benchmarking
+  │── reward_function.py         # Reward mechanism for reinforcement learning
+  │── config.py                  # Configuration file (hyperparameters)
+  │── requirements.txt           # Dependencies
+  │── README.md                  # Project documentation
 
 
 ---
