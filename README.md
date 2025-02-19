@@ -94,7 +94,7 @@ If you use this work, please cite
 
 ```
 @article{marl-ptm,
-  author = {Your Name, Collaborators},
+  author = {Pinlab Members and Collaborators},
   title = {Multi-Agent Reinforcement Learning for PTM Prediction},
   year = {2025},
   journal = {ArXiv Preprint},
