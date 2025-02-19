@@ -12,7 +12,7 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
 ---
 
 ## **Methodology**
-### ** Data Processing**
+### **Data Processing**
 - **Protein Sequences**: Extracted from **UniProt**, represented using **ESM-2 embeddings**.
 - **PTM Annotations**: Sourced from **PhosphoSitePlus, UniProt** for supervised learning.
 - **Protein Structures**: Derived from **AlphaFold**, capturing secondary structure features.
