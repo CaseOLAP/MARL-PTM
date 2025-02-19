@@ -15,7 +15,7 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
 ### **Data Processing**
 - **Protein Sequences**: Extracted from **UniProt**, represented using **ESM-2 embeddings**.
 - **PTM Annotations**: Sourced from **PhosphoSitePlus, UniProt** for supervised learning.
-- **Protein Structures**: Derived from **AlphaFold**, capturing secondary structure features.
+- **Protein Structures**: Derived from **PDB/(AlphaFold)**, capturing secondary structure features.
 - **Pathway Graph Data**: Constructed from **KEGG, Reactome, STRING**, processed using **GraphSAGE**.
 - **Gene Expression Data**: Extracted from **GTEx, TCGA**, preprocessed using PCA & WGCNA.
 
