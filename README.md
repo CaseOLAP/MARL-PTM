@@ -32,6 +32,24 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
 - Reward function **penalizes incorrect PTM predictions** and **rewards high-confidence biological insights**.
 - Model is evaluated using **Precision, Recall, F1-score, and AUPRC**.
 
+
+## Project Structure
+
+marl-ptm-prediction/
+│── data/                     # Data directory (protein sequences, pathways, gene expression)
+│── models/                   # Trained models
+│── utils/                    # Utility functions
+│── main.py                   # Entry point for training and evaluation
+│── data_processing.py         # Data preprocessing and feature extraction
+│── marl_agents.py             # Defines multi-agent RL architecture
+│── train_marl.py              # Training pipeline
+│── evaluate_marl.py           # Evaluation and benchmarking
+│── reward_function.py         # Reward mechanism for reinforcement learning
+│── config.py                  # Configuration file (hyperparameters)
+│── requirements.txt           # Dependencies
+│── README.md                  # Project documentation
+
+
 ---
 
 ## Installation & Setup
