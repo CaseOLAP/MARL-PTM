@@ -34,8 +34,8 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
 
 
 ## Project Structure
-
-  marl-ptm-prediction/
+```
+  marl-ptm/
   │── data/                     # Data directory (protein sequences, pathways, gene expression)
   │── models/                   # Trained models
   │── utils/                    # Utility functions
@@ -49,6 +49,7 @@ Post-translational modifications (PTMs) regulate protein function and play a cru
   │── requirements.txt           # Dependencies
   │── README.md                  # Project documentation
 
+```
 
 ---
 
