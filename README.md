@@ -47,4 +47,43 @@ source env/bin/activate  # For MacOS/Linux
 
 # Install dependencies
 pip install -r requirements.txt
+```
+
+## Usage
+### Preprocess Data
+```python
+python data_processing.py --input data/proteins.fasta --output processed_data/
+```
+
+### Train the Mulit-Agent Model
+```python
+python train_marl.py --epochs 50 --batch_size 64
+```
+
+### Evaluate the Model
+```python
+python evaluate_marl.py --test_data data/test_set.csv
+```
+
+## Expected Results
+- Improved PTM site prediction accuracy by integrating multi-omic data.
+- Higher interpretability using attention-based visualization.
+- Biological relevance via pathway-informed reinforcement learning.
+
+## Citation
+If you use this work, please cite
+
+```
+@article{marl-ptm,
+  author = {Your Name, Collaborators},
+  title = {Multi-Agent Reinforcement Learning for PTM Prediction},
+  year = {2025},
+  journal = {ArXiv Preprint},
+  url = {https://github.com/your-username/marl-ptm-prediction}
+}
+```
+
+### Contact & Contributions
+For questions, reach out via ```dibakarsigdel@ucla.edu```. Contributions are welcome via pull requests! 🚀
+
 
