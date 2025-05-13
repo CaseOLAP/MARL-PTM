@@ -21,18 +21,18 @@ The system is designed to:
              └────────────┬───────────────┘
                           ▼
      ┌─────────────────────────────────────────────┐
-     │         Specialized Reinforcement Agents     │
+     │         Specialized Reinforcement Agents    │
      ├─────────────────────────────────────────────┤
-     │  ↳ Sequence Agent     (ESM-2 embeddings)     │
-     │  ↳ Structure Agent    (RSA, DSSP, pLDDT)     │
-     │  ↳ Graph Agent        (STRING, Reactome)     │
-     │  ↳ Expression Agent   (GTEx / TCGA PCA)      │
-     │  ↳ Proteoform Agent   (Isoform domains)      │
+     │  ↳ Sequence Agent     (ESM-2 embeddings)    │
+     │  ↳ Structure Agent    (RSA, DSSP, pLDDT)    │
+     │  ↳ Graph Agent        (STRING, Reactome)    │
+     │  ↳ Expression Agent   (GTEx / TCGA PCA)     │
+     │  ↳ Proteoform Agent   (Isoform domains)     │
      └────────────┬────────────────────────────────┘
                   ▼
          ┌──────────────────────────────┐
-         │     PTM Integration Agent     │
-         │ ↳ Combines multi-agent output │
+         │     PTM Integration Agent    │
+         │ ↳ Combines multi-agent output│
          └────────────┬─────────────────┘
                       ▼
          ┌──────────────────────────────┐
