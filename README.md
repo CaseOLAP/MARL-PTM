@@ -1,108 +1,105 @@
-# Multi-Agent Reinforcement Learning for Post-Translational Modification (PTM) Prediction
 
-## Project Overview
-Post-translational modifications (PTMs) regulate protein function and play a crucial role in cellular signaling and disease progression. This project develops a **Multi-Agent Reinforcement Learning (MARL) model** to predict PTM sites by integrating **protein sequence, structural data, pathway interactions, and gene expression networks**.
+# MARL-PTM: Multi-Agent Reinforcement Learning for Post-Translational Modification Prediction
 
-## Key Features
-- **Multi-Agent AI System**: Uses specialized agents for different biological aspects.
-- **Reinforcement Learning (RL)**: Trained using a biologically-aware reward function.
-- **Graph Neural Networks (GNNs)**: Models protein-pathway interactions.
-- **Attention Mechanisms**: Enhances interpretability by highlighting key features.
+## Overview
 
----
+**MARL-PTM** is a modular, interpretable, and biologically grounded framework for predicting post-translational modification (PTM) sites in proteins. It employs a multi-agent reinforcement learning (MARL) architecture, where each agent is responsible for a specific biological modality, such as sequence, structure, expression, and interaction networks.
 
-## **Methodology**
-### **Data Processing**
-- **Protein Sequences**: Extracted from **UniProt**, represented using **ESM-2 embeddings**.
-- **PTM Annotations**: Sourced from **PhosphoSitePlus, UniProt** for supervised learning.
-- **Protein Structures**: Derived from **PDB/(AlphaFold)**, capturing secondary structure features.
-- **Pathway Graph Data**: Constructed from **KEGG, Reactome, STRING**, processed using **GraphSAGE**.
-- **Gene Expression Data**: Extracted from **GTEx, TCGA**, preprocessed using PCA & WGCNA.
+The system is designed to:
+- Integrate multiple biological data sources (UniProt, AlphaFold, GTEx, STRING, etc.)
+- Predict PTM sites with high confidence and biological context
+- Provide interpretable decision pathways per prediction
+- Support ablation, visualization, and biological validation
 
-### **Multi-Agent Reinforcement Learning (MARL)**
-- **Sequence Agent**: Learns PTM patterns based on amino acid motifs.
-- **Structure Agent**: Evaluates PTM probability based on structural constraints.
-- **Graph Agent**: Captures pathway-specific PTM regulations.
-- **Gene Expression Agent**: Identifies PTM relevance based on transcriptomic signals.
-- **PTM Agent**: Integrates outputs from all agents to make the final PTM site prediction.
-- **Reward Agent**: Provides feedback using accuracy, confidence, and pathway impact.
+## Workflow
 
-### **Training & Evaluation**
-- Uses **Deep Q-Networks (DQN)** for agent training.
-- Reward function **penalizes incorrect PTM predictions** and **rewards high-confidence biological insights**.
-- Model is evaluated using **Precision, Recall, F1-score, and AUPRC**.
+```mermaid
+flowchart TD
+    A[FASTA Files / UniProt] --> S[Sequence Agent]
+    B[PDB / AlphaFold] --> T[Structure Agent]
+    C[STRING / Reactome] --> G[Graph Agent]
+    D[GTEx / TCGA Expression] --> E[Expression Agent]
+    F[Isoform FASTA / Domain Map] --> P[Proteoform Agent]
 
+    S --> I[PTM Integration Agent]
+    T --> I
+    G --> I
+    E --> I
+    P --> I
 
-## Project Structure
-```
-  marl-ptm/
-  │── data/                     # Data directory (protein sequences, pathways, gene expression)
-  │── models/                   # Trained models
-  │── utils/                    # Utility functions
-  │── main.py                   # Entry point for training and evaluation
-  │── data_processing.py         # Data preprocessing and feature extraction
-  │── marl_agents.py             # Defines multi-agent RL architecture
-  │── train_marl.py              # Training pipeline
-  │── evaluate_marl.py           # Evaluation and benchmarking
-  │── reward_function.py         # Reward mechanism for reinforcement learning
-  │── config.py                  # Configuration file (hyperparameters)
-  │── requirements.txt           # Dependencies
-  │── README.md                  # Project documentation
+    I --> R[Predicted PTM Sites]
+    R --> W[Reward Agent]
+    W --> S
+    W --> T
+    W --> G
+    W --> E
+    W --> P
+````
+
+## Folder Structure
 
 ```
+marl_ptm/
+├── agents/                  # All core and integration agents
+├── reward/                  # Reward matrix and controller
+├── data/                    # Biological data loaders and preprocessors
+├── env/                     # Environment logic and replay buffers
+├── training/                # Training loop, scheduler, logger
+├── evaluation/              # Metrics, ablation, case studies, visualization
+├── config/                  # YAML configuration files
+├── main.py                  # Main entry point to run training
+└── README.md                # Project documentation
+```
 
----
+## Installation
 
-## Installation & Setup
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/marl-ptm-prediction.git
-cd marl-ptm-prediction
+git clone https://github.com/your-username/marl-ptm.git
+cd marl-ptm
 
 # Create a virtual environment
 python -m venv env
-source env/bin/activate  # For MacOS/Linux
-# On Windows, use: env\Scripts\activate
+source env/bin/activate  # For Windows: env\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
+**Dependencies include**: PyTorch, torch-geometric, transformers, BioPython, scikit-learn, seaborn, matplotlib
+
 ## Usage
-### Preprocess Data
-```python
-python data_processing.py --input data/proteins.fasta --output processed_data/
+
+**Run training:**
+
+```bash
+python main.py --config config/default_config.yaml --agent_config config/agent_config.yaml
 ```
 
-### Train the Mulit-Agent Model
-```python
-python train_marl.py --epochs 50 --batch_size 64
-```
+**Evaluate model:**
 
-### Evaluate the Model
-```python
-python evaluate_marl.py --test_data data/test_set.csv
-```
+Update `evaluation/evaluator.py` to pass test set and use the `Evaluator` class to compute metrics.
 
-## Expected Results
-- Improved PTM site prediction accuracy by integrating multi-omic data.
-- Higher interpretability using attention-based visualization.
-- Biological relevance via pathway-informed reinforcement learning.
+## Configuration
+
+* `default_config.yaml`: Global training parameters
+* `agent_config.yaml`: Agent-specific network dimensions and learning rates
 
 ## Citation
-If you use this work, please cite
+
+If you use MARL-PTM in your work, please cite:
 
 ```
-@article{marl-ptm,
-  author = {PingLab Members and Collaborators},
-  title = {Multi-Agent Reinforcement Learning for PTM Prediction},
-  year = {2025},
-  journal = {ArXiv Preprint},
-  url = {https://github.com/your-username/marl-ptm-prediction}
+@article{marlptm2025,
+  title={Multi-Agent Reinforcement Learning for Post-Translational Modification Prediction},
+  author={Your Name and Collaborators},
+  year={2025},
+  journal={Bioinformatics / Preprint},
+  url={https://github.com/your-username/marl-ptm}
 }
 ```
 
-### Contact & Contributions
-For questions, reach out via ```dibakarsigdel@ucla.edu```. Contributions are welcome via pull requests! 🚀
+## License
 
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
+----
