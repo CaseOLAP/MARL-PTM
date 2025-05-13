@@ -1,41 +1,49 @@
 ```mermaid
 graph TD
 
-%% Data Inputs
-A1[Protein Sequence] --> B1[Sequence Agent]
-A2[Protein Structure] --> B2[Structure Agent]
-A3[Pathway Data] --> B3[Graph Agent]
-A4[Expression Data] --> B4[Expression Agent]
-A5[Co-Evolution Data] --> B5[Co-Evolution Agent]
-A6[Proteoform Data] --> B6[Proteoform Agent]
+    %% Core MARL Flow
+    A[Multi-Omics State Space] --> B[PTM Integration Agent]
+    B --> C[PTM Prediction Output]
+    C --> D[Environment + Feedback Loop]
+    D --> E[Reward Agent]
+    E --> B
 
-%% Core Agent Outputs to Integration
-B1 --> C[PTM Integration Agent]
-B2 --> C
-B3 --> C
-B4 --> C
-B5 --> C
-B6 --> C
+    %% Specialized Biological Agents
+    A --> SA[Sequence Agent]
+    A --> ST[Structure Agent]
+    A --> GA[Graph Agent]
+    A --> EX[Expression Agent]
+    A --> CO[Co-Evolution Agent]
+    A --> PF[Proteoform Agent]
 
-%% Integration with Environment
-C --> D[Environment]
-D --> B1
-D --> B2
-D --> B3
-D --> B4
-D --> B5
-D --> B6
+    %% Agent Contributions to Integration
+    SA --> B
+    ST --> B
+    GA --> B
+    EX --> B
+    CO --> B
+    PF --> B
 
-%% Reward and Feedback Path
-D --> E[Reward Agent]
-E --> B1
-E --> B2
-E --> B3
-E --> B4
-E --> B5
-E --> B6
+    %% Reward Signal Distribution
+    E --> SA
+    E --> ST
+    E --> GA
+    E --> EX
+    E --> CO
+    E --> PF
 
-%% Optional LLM Feedback Loop
-E --> F[LLM-Based Feedback]
-F --> E
+    %% Optional LLM-Based Modules
+    E --> L1[LLM-Based Reward Reformer]
+    B --> L2[LLM-Based Explanation Generator]
+    L1 --> E
+    L2 --> C
+
+    %% Logging and Visualization
+    C --> V1[PTM Report Logger]
+    B --> V2[Agent Attribution Heatmap]
+    E --> V3[Reward Dynamics Monitor]
+
+    %% Model Output to User or Experiment
+    C --> X[Validated PTM Sites + Hypotheses]
+
 ```
