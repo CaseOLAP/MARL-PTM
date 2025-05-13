@@ -16,36 +16,39 @@ The system is designed to:
 
 ```
 
-+------------------------+      +---------------------+      +---------------------+      
-|  Protein Sequences     | ---> |   Sequence Agent    |---> |                       |      
-+------------------------+      +---------------------+     |                       |      
-+------------------------+      +---------------------+     |         PTM           |      
-|  Protein Structures    | ---> |   Structure Agent   |---> |     Integration       |     
-+------------------------+      +---------------------+     |       Agent           |      +-----------------------+
-+------------------------+      +---------------------+     |   (Meta-popicy layer) |      |                       |
-|  Pathway Graph Data    | ---> |   Graph Agent       |---> |                       |  --->| Predicted PTM Sites   |
-+------------------------+      +---------------------+     |                       |      |                       |
-+------------------------+      +---------------------+     |                       |       +-----------------------+
-|  Expression Profiles   | ---> |   Expression Agent  |---> |                       |    
-+------------------------+      +---------------------+     |                       |      
-+------------------------+      +---------------------+     |                       |     
-|  Proteoform Domains    | ---> |   Proteoform Agent  |---> |                       |      
-+------------------------+      +---------------------+      +----------------------+     
-                                                                 |
-                                                                 v
-                                                      +------------------------+
-                                                      |     Reward Agent       |
-                                                      |  - Correctness Score   |
-                                                      |  - Confidence Score    |
-                                                      |  - Contextual Match    |
-                                                      |  - Agent Agreement     |
-                                                      +------------------------+
-                                                                 |
-                                                                 v
-                                                      +------------------------+
-                                                      |    Policy Updates      |
-                                                      | (RL learning per agent)|
-                                                      +------------------------+
+             ┌────────────────────────────┐
+             │    Biological Data Inputs  │
+             └────────────┬───────────────┘
+                          ▼
+     ┌─────────────────────────────────────────────┐
+     │         Specialized Reinforcement Agents     │
+     ├─────────────────────────────────────────────┤
+     │  ↳ Sequence Agent     (ESM-2 embeddings)     │
+     │  ↳ Structure Agent    (RSA, DSSP, pLDDT)     │
+     │  ↳ Graph Agent        (STRING, Reactome)     │
+     │  ↳ Expression Agent   (GTEx / TCGA PCA)      │
+     │  ↳ Proteoform Agent   (Isoform domains)      │
+     └────────────┬────────────────────────────────┘
+                  ▼
+         ┌──────────────────────────────┐
+         │     PTM Integration Agent     │
+         │ ↳ Combines multi-agent output │
+         └────────────┬─────────────────┘
+                      ▼
+         ┌──────────────────────────────┐
+         │      Final PTM Prediction    │
+         └────────────┬─────────────────┘
+                      ▼
+         ┌──────────────────────────────┐
+         │         Reward Agent         │
+         │ ↳ Confidence + Context-Aware │
+         └────────────┬─────────────────┘
+                      ▼
+         ┌──────────────────────────────┐
+         │     Learning Environment     │
+         │  ↳ Policy updates per agent  │
+         └──────────────────────────────┘
+
 ```
 
 
