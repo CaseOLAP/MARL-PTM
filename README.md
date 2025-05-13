@@ -13,28 +13,42 @@ The system is designed to:
 
 ## Workflow
 
-```mermaid
-flowchart TD
-    A[FASTA Files / UniProt] --> S[Sequence Agent]
-    B[PDB / AlphaFold] --> T[Structure Agent]
-    C[STRING / Reactome] --> G[Graph Agent]
-    D[GTEx / TCGA Expression] --> E[Expression Agent]
-    F[Isoform FASTA / Domain Map] --> P[Proteoform Agent]
 
-    S --> I[PTM Integration Agent]
-    T --> I
-    G --> I
-    E --> I
-    P --> I
+```
 
-    I --> R[Predicted PTM Sites]
-    R --> W[Reward Agent]
-    W --> S
-    W --> T
-    W --> G
-    W --> E
-    W --> P
-````
++------------------------+      +---------------------+      +-------------------------+      +------------------------+
+|  Protein Sequences     | ---> |   Sequence Agent     | ---> |                         |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
+|  Protein Structures    | ---> |   Structure Agent    | ---> |                         |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
++------------------------+      +---------------------+      |                         | ---> |                        |
+|  Pathway Graph Data    | ---> |   Graph Agent        | ---> |   PTM Integration Agent | ---> |  Predicted PTM Sites   |
++------------------------+      +---------------------+      |     (Meta-policy layer) |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
+|  Expression Profiles   | ---> |   Expression Agent   | ---> |                         |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
++------------------------+      +---------------------+      |                         |      |                        |
+|  Proteoform Domains    | ---> |   Proteoform Agent   | ---> |                         |      |                        |
++------------------------+      +---------------------+      +-------------------------+      +------------------------+
+                                                                 |
+                                                                 |
+                                                                 v
+                                                      +------------------------+
+                                                      |     Reward Agent       |
+                                                      |  - Correctness Score   |
+                                                      |  - Confidence Score    |
+                                                      |  - Contextual Match    |
+                                                      |  - Agent Agreement     |
+                                                      +------------------------+
+                                                                 |
+                                                                 v
+                                                      +------------------------+
+                                                      |    Policy Updates      |
+                                                      | (RL learning per agent)|
+                                                      +------------------------+
+```
+
 
 ## Folder Structure
 
