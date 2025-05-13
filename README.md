@@ -23,13 +23,13 @@ The system is designed to:
 |  Protein Structures    | ---> |   Structure Agent   |---> |     Integration       |     
 +------------------------+      +---------------------+     |       Agent           |      +-----------------------+
 +------------------------+      +---------------------+     |   (Meta-popicy layer) |      |                       |
-|  Pathway Graph Data    | ---> |   Graph Agent        |--->|                       |  --->| Predicted PTM Sites   |
+|  Pathway Graph Data    | ---> |   Graph Agent       |---> |                       |  --->| Predicted PTM Sites   |
 +------------------------+      +---------------------+     |                       |      |                       |
 +------------------------+      +---------------------+     |                       |       +-----------------------+
-|  Expression Profiles   | ---> |   Expression Agent   | --->|                      |    
+|  Expression Profiles   | ---> |   Expression Agent  |---> |                       |    
 +------------------------+      +---------------------+     |                       |      
 +------------------------+      +---------------------+     |                       |     
-|  Proteoform Domains    | ---> |   Proteoform Agent   | --->|                      |      
+|  Proteoform Domains    | ---> |   Proteoform Agent  |---> |                       |      
 +------------------------+      +---------------------+      +----------------------+     
                                                                  |
                                                                  v
