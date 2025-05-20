@@ -1,49 +1,35 @@
+# agents/graph_agent.py
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_geometric.nn import GCNConv
 from agents.base_agent import BaseAgent
-
-class GraphQNetwork(nn.Module):
-    """
-    Q-network for the Graph Agent.
-    Processes graph-based node embeddings (e.g., from GraphSAGE or GAT)
-    to predict PTM likelihoods per residue.
-    """
-
-    def __init__(self, input_dim, output_dim):
-        super(GraphQNetwork, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 1)
-
-    def forward(self, x):
-        """
-        Forward pass through the graph Q-network.
-        Input: (batch_size, sequence_len, input_dim)
-        Output: (batch_size, sequence_len)
-        """
-        batch_size, seq_len, dim = x.shape
-        x = x.view(-1, dim)  # Flatten to (batch_size * sequence_len, input_dim)
-
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-
-        x = x.view(batch_size, seq_len)  # Reshape back to (batch_size, sequence_len)
-        return x
-
 
 class GraphAgent(BaseAgent):
     """
-    Graph Agent specialized for interpreting pathway-based node embeddings.
-    Predicts PTM probability based on context from protein interaction networks.
+    Learns contextual residue embeddings from residue-residue graph.
+    Input: residue node features [L, F] and edge_index [2, E]
+    Output: node embeddings [L, D]
     """
 
-    def __init__(self, input_dim=128, action_dim=1024, **kwargs):
-        super().__init__(input_dim, action_dim, **kwargs)
+    def __init__(self, input_feat_dim=1, hidden_dim=64, output_dim=128, num_layers=2, device='cpu'):
+        super().__init__(input_dim=input_feat_dim, output_dim=output_dim, device=device)
 
-    def build_model(self):
+        self.layers = nn.ModuleList()
+        self.layers.append(GCNConv(input_feat_dim, hidden_dim))
+        for _ in range(num_layers - 2):
+            self.layers.append(GCNConv(hidden_dim, hidden_dim))
+        self.layers.append(GCNConv(hidden_dim, output_dim))
+
+    def forward(self, node_features, edge_index):
         """
-        Constructs the Q-network to process graph-based embeddings.
+        node_features: FloatTensor [L, F]
+        edge_index: LongTensor [2, E] (graph edges)
+        returns: FloatTensor [L, D]
         """
-        return GraphQNetwork(input_dim=self.input_dim, output_dim=self.action_dim)
+        x = node_features
+        for layer in self.layers[:-1]:
+            x = F.relu(layer(x, edge_index))
+        x = self.layers[-1](x, edge_index)
+        return x  # [L, D]

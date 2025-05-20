@@ -1,0 +1,52 @@
+# configs/config.yaml
+
+model:
+  input_dim: 128
+  hidden_dim: 64
+  output_dim: 128
+  max_sequence_length: 100
+  num_modalities: 6
+  num_ptms: 13
+
+ptm_types:
+  - phosphorylation
+  - acetylation
+  - ubiquitination
+  - methylation
+  - glycosylation
+  - sumoylation
+  - nitration
+  - s-nitrosylation
+  - palmitoylation
+  - myristoylation
+  - hydroxylation
+  - sulfation
+  - citrullination
+
+training:
+  num_epochs: 50
+  batch_size: 1
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epsilon_start: 1.0
+  epsilon_end: 0.1
+  epsilon_decay_steps: 100
+  scheduler:
+    use_warmup: true
+    warmup_steps: 5
+    decay_factor: 0.5
+    decay_step_size: 10
+
+paths:
+  base_data_dir: ./data
+  checkpoint_dir: ./checkpoints
+  log_dir: ./logs
+
+files:
+  sequence: sequence/sequences.csv
+  structure: structure/structures.csv
+  graph: graph/graphs.csv
+  expression: expression/expression.csv
+  proteoform: proteoform/proteoforms.csv
+  network: network/protein_pathway_edges.csv
+  labels: labels/ptm_sites.csv

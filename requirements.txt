@@ -1,13 +1,49 @@
-torch
-torchvision
-torchaudio
-torch-geometric
-numpy
-pandas
-scipy
-networkx
-biopython
-scikit-learn
-tqdm
-matplotlib
-seaborn
+# Core ML & DL Frameworks
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Graph Neural Networks
+torch-geometric>=2.3.0
+torch-scatter>=2.1.0
+torch-sparse>=0.6.17
+networkx>=3.1
+
+# Data Handling
+pandas>=1.5.3
+numpy>=1.24.3
+scikit-learn>=1.2.2
+
+# Biological Data Processing
+biopython>=1.81
+dssp-parser>=0.3.0  # optional, for parsing DSSP if real structures are used
+
+# Visualization
+matplotlib>=3.7.1
+seaborn>=0.12.2
+plotly>=5.15.0
+
+# YAML Configuration
+pyyaml>=6.0.1
+
+# Logging and Tracking
+tqdm>=4.65.0
+loguru>=0.7.0
+
+# Environment & CLI
+rich>=13.3.4
+click>=8.1.3
+
+# Jupyter Support
+notebook>=6.5.4
+jupyterlab>=3.6.3
+
+# Optional: Hyperparameter Optimization
+optuna>=3.1.1
+
+# Optional: Mixed precision (for speed)
+nvidia-apex; platform_system=="Linux"
+
+# Optional: Real PTM data integration
+beautifulsoup4>=4.12.2
+requests>=2.31.0

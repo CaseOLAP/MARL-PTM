@@ -1,92 +1,125 @@
-import argparse
+# main.py
+
+import os
 import yaml
 import torch
-
+import pandas as pd
 from training.train_loop import Trainer
-from training.trainer import initialize_agents, initialize_ptm_agent
-from env.marl_env import MultiAgentEnvironment
-from data.sequence_loader import SequenceLoader
-from data.structure_loader import StructureLoader
-from data.graph_loader import GraphLoader
-from data.expression_loader import ExpressionLoader
-from data.proteoform_loader import ProteoformLoader
-from reward.reward_agent import RewardAgent
-from evaluation.evaluator import Evaluator
+from agents.sequence_agent import SequenceAgent
+from agents.structure_agent import StructureAgent
+from agents.graph_agent import GraphAgent
+from agents.expression_agent import ExpressionAgent
+from agents.proteoform_agent import ProteoformAgent
+from agents.network_agent import NetworkAgent
+from agents.integrator_agent import IntegratorAgent
+from agents.aggregator_agent import AggregatorAgent
+from agents.ptm_agent import PTMAgent
 
-def load_yaml(path):
-    with open(path, 'r') as f:
-        return yaml.safe_load(f)
+from data_loaders.sequence_loader import SequenceLoader
+from data_loaders.structure_loader import StructureLoader
+from data_loaders.graph_loader import GraphLoader
+from data_loaders.expression_loader import ExpressionLoader
+from data_loaders.proteoform_loader import ProteoformLoader
+from data_loaders.network_loader import NetworkLoader
 
-def build_environment(state_data, max_seq_len):
-    return MultiAgentEnvironment(state_sources=state_data, max_seq_len=max_seq_len)
+#from utils.logger import Logger
 
-def simulate_data_loader(state_data, labels, context_info):
-    """
-    Simulated batch iterator for demonstration.
-    Returns one item at a time: (protein_id, ground_truth, context)
-    """
-    for protein_id in labels:
-        yield protein_id, labels[protein_id], context_info.get(protein_id, {})
+# ========== Load Configuration ==========
+with open("configs/config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='config/default_config.yaml')
-    parser.add_argument('--agent_config', default='config/agent_config.yaml')
-    args = parser.parse_args()
+device = "cuda" if torch.cuda.is_available() else "cpu"
+logger = Logger(log_dir=config["paths"]["log_dir"])
+ptm_types = config["ptm_types"]
 
-    # Load configs
-    config = load_yaml(args.config)
-    agent_config = load_yaml(args.agent_config)
-    device = torch.device(config.get('device', 'cpu'))
+# ========== Initialize Data Loaders ==========
+base_path = config["paths"]["base_data_dir"]
+file_cfg = config["files"]
 
-    # Initialize agents
-    agents = initialize_agents(agent_config, device=device)
-    ptm_agent = initialize_ptm_agent(num_agents=config['integration']['num_agents'],
-                                     action_dim=config['integration']['action_dim'],
-                                     device=device)
+data_loaders = {
+    "sequence": SequenceLoader(os.path.join(base_path, file_cfg["sequence"])),
+    "structure": StructureLoader(os.path.join(base_path, file_cfg["structure"])),
+    "graph": GraphLoader(os.path.join(base_path, file_cfg["graph"])),
+    "expression": ExpressionLoader(os.path.join(base_path, file_cfg["expression"])),
+    "proteoform": ProteoformLoader(os.path.join(base_path, file_cfg["proteoform"])),
+    "network": NetworkLoader(os.path.join(base_path, file_cfg["network"]))
+}
 
-    # Load data
-    print("Loading biological data...")
-    sequence_loader = SequenceLoader()
-    structure_loader = StructureLoader("data/structures/")
-    graph_loader = GraphLoader("data/pathway_graph.edgelist")
-    expression_loader = ExpressionLoader("data/expression_matrix.csv")
-    proteoform_loader = ProteoformLoader("data/canonical.fasta", "data/isoforms.fasta")
+# Standard wrapper for interface uniformity
+class LoaderWrapper:
+    def __init__(self, loader, tensor_method):
+        self.loader = loader
+        self.tensor_method = tensor_method
 
-    state_data = {
-        "sequence": sequence_loader.batch_embed_sequences(sequence_loader.load_fasta_sequences("data/sequences.fasta")),
-        "structure": structure_loader.load_batch_structures(),
-        "graph": graph_loader.build_embeddings(),
-        "expression": expression_loader.load_embeddings(),
-        "proteoform": proteoform_loader.build_features()
-    }
+    def get_tensor(self, pid):
+        return getattr(self.loader, self.tensor_method)(pid)
 
-    # Load dummy labels and context (replace with actual loader)
-    dummy_labels = {pid: torch.randint(0, 2, (1024,)) for pid in state_data['sequence'].keys()}
-    dummy_context = {pid: {'is_critical': [[False]*1024],
-                           'context_supported': {k: [[False]*1024] for k in state_data}} for pid in dummy_labels}
+modality_loaders = {
+    "sequence": LoaderWrapper(data_loaders["sequence"], "get_sequence_tensor"),
+    "structure": LoaderWrapper(data_loaders["structure"], "get_structure_tensor"),
+    "graph": LoaderWrapper(data_loaders["graph"], "get_graph_edge_index"),
+    "expression": LoaderWrapper(data_loaders["expression"], "get_expression_tensor"),
+    "proteoform": LoaderWrapper(data_loaders["proteoform"], "get_proteoform_sites"),
+    "network": LoaderWrapper(data_loaders["network"], "get_pathway_nodes")
+}
 
-    # Build environment
-    env = build_environment(state_data, config['training']['max_seq_len'])
+# ========== Initialize All Agents ==========
+data_agents = {
+    "sequence": SequenceAgent(device=device),
+    "structure": StructureAgent(device=device),
+    "graph": GraphAgent(device=device),
+    "expression": ExpressionAgent(device=device),
+    "proteoform": ProteoformAgent(device=device),
+    "network": NetworkAgent(device=device)
+}
 
-    # Setup reward logic and training
-    reward_cfg = {"agreement_threshold": config['training']['reward_agreement_threshold']}
-    data_loader = simulate_data_loader(state_data, dummy_labels, dummy_context)
+integrator = IntegratorAgent(device=device)
 
-    trainer = Trainer(
-        agents=agents,
-        ptm_agent=ptm_agent,
-        env=env,
-        data_loader=data_loader,
-        reward_config=reward_cfg,
-        device=device
-    )
+# 13 PTM-specific agents using same architecture
+ptm_agents = {
+    ptm: PTMAgent(device=device) for ptm in ptm_types
+}
 
-    trainer.train(
-        num_epochs=config['training']['num_epochs'],
-        epsilon=config['training']['epsilon_start'],
-        update_target_every=config['training']['update_target_every']
-    )
+aggregator = AggregatorAgent(ptm_types=ptm_types, device=device)
 
-if __name__ == "__main__":
-    main()
+# ========== Load Ground-Truth PTM Labels ==========
+label_df = pd.read_csv(os.path.join(base_path, file_cfg["labels"]))
+label_dict = {}
+for _, row in label_df.iterrows():
+    pid = row["protein_id"]
+    residue = int(row["residue"])
+    ptm = row["ptm_type"]
+    if pid not in label_dict:
+        label_dict[pid] = {}
+    label_dict[pid][residue] = ptm
+
+# ========== Train ==========
+trainer = Trainer(
+    data_agents=data_agents,
+    integrator=integrator,
+    ptm_agents=ptm_agents,
+    aggregator=aggregator,
+    data_loader_dict=modality_loaders,
+    criterion=torch.nn.BCELoss(),
+    device=device
+)
+
+protein_ids = list(label_dict.keys())
+trainer.train(protein_ids=protein_ids, label_dict=label_dict, num_epochs=config["training"]["num_epochs"])
+
+# ========== Save All Models ==========
+checkpoint_dir = config["paths"]["checkpoint_dir"]
+os.makedirs(checkpoint_dir, exist_ok=True)
+
+# Save PTM agents
+for ptm, agent in ptm_agents.items():
+    agent.save(os.path.join(checkpoint_dir, f"{ptm}_agent.pt"))
+
+# Save integrator
+integrator.save(os.path.join(checkpoint_dir, "integrator.pt"))
+
+# Save data agents
+for name, agent in data_agents.items():
+    agent.save(os.path.join(checkpoint_dir, f"{name}_agent.pt"))
+
+print(f"✅ All models saved to: {checkpoint_dir}")
